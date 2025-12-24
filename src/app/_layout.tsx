@@ -1,4 +1,4 @@
-import { db, localDb } from "@/db";
+import { db, localDb } from "@/database";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import {
   DarkTheme,
