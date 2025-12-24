@@ -1,17 +1,11 @@
-import { drizzle } from "drizzle-orm/expo-sqlite";
+import { db } from "@/utils/db";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
-import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
-import * as SQLite from "expo-sqlite";
 import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { usersTable } from "../db/schema";
 import migrations from "../drizzle/migrations";
 
-const expo = SQLite.openDatabaseSync("db.db");
-const db = drizzle(expo);
-
 export default function QueryDrizzleExample() {
-  useDrizzleStudio(expo);
   const { success, error } = useMigrations(db, migrations);
   const [items, setItems] = useState<(typeof usersTable.$inferSelect)[] | null>(
     null
