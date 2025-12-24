@@ -1,7 +1,7 @@
+import { db } from "@/db";
 import { categoriesTable, entriesTable, Entry, usersTable } from "@/db/schema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { eq } from "drizzle-orm";
-import { db } from "../db";
 
 type CreateEntryParams = Pick<
   Entry,

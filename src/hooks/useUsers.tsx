@@ -1,7 +1,7 @@
+import { db } from "@/db";
 import { User, usersTable } from "@/db/schema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { eq } from "drizzle-orm";
-import { db } from "../db";
 
 type CreateUserParams = Pick<User, "name" | "age" | "email">;
 type UpdateUserParams = Pick<User, "id" | "name" | "age" | "email">;
