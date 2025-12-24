@@ -1,11 +1,12 @@
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { localDb } from "@/utils/db";
+import { db, localDb } from "@/utils/db";
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { Stack } from "expo-router";
 import { SQLiteProvider } from "expo-sqlite";
@@ -13,6 +14,7 @@ import { StatusBar } from "expo-status-bar";
 import { Suspense } from "react";
 import { Text } from "react-native";
 import "react-native-reanimated";
+import migrations from "../drizzle/migrations";
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -21,7 +23,13 @@ const queryClient = new QueryClient();
 
 export default function RootLayout() {
   useDrizzleStudio(localDb);
+  const { error } = useMigrations(db, migrations);
+
   const colorScheme = useColorScheme();
+
+  if (error) {
+    console.error("Failed to run migrations", error);
+  }
 
   return (
     <QueryClientProvider client={queryClient}>

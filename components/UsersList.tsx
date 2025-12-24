@@ -1,33 +1,13 @@
-import { createUser, getUsers } from "@/utils/api";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import useUsers from "@/hooks/useUsers";
 import { Button, Text } from "react-native";
 import { ThemedView } from "./themed-view";
 
 export default function UsersList() {
-  const queryClient = useQueryClient();
-  // fetch users from the database and display them
-  const {
-    data: users,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["users"],
-    queryFn: getUsers,
-  });
+  const { createUser, getUsers } = useUsers();
 
-  // mutation to create a new user
-  const mutation = useMutation({
-    mutationFn: createUser,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-    },
-    onError: (error) => {
-      console.error("Error creating user:", error);
-    },
-  });
-
-  if (isLoading) return <Text>Loading...</Text>;
-  if (error) return <Text>An error occurred: {error.message}</Text>;
+  if (getUsers.isLoading) return <Text>Loading...</Text>;
+  if (getUsers.error)
+    return <Text>An error occurred: {getUsers.error.message}</Text>;
 
   return (
     <ThemedView
@@ -39,7 +19,7 @@ export default function UsersList() {
         borderColor: "red",
       }}
     >
-      {users?.map((user) => (
+      {getUsers.data?.map((user) => (
         <Text key={user.id}>{user.name}</Text>
       ))}
       <Button
@@ -47,10 +27,10 @@ export default function UsersList() {
         accessibilityLabel="Learn more about this purple button"
         title="Add User"
         onPress={() =>
-          mutation.mutate({
+          createUser.mutate({
             name: "Jane Doe",
             age: 30,
-            email: "jane.doe@example.com",
+            email: `${Math.random() * 1000}@example.com`,
           })
         }
       />
