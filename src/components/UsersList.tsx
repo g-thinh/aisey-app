@@ -1,6 +1,5 @@
 import useUsers from "@/hooks/useUsers";
-import { Button, Text } from "react-native";
-import { ThemedView } from "./themed-view";
+import { Button, Text, View } from "react-native";
 
 export default function UsersList() {
   const { createUser, getUsers } = useUsers();
@@ -10,7 +9,7 @@ export default function UsersList() {
     return <Text>An error occurred: {getUsers.error.message}</Text>;
 
   return (
-    <ThemedView
+    <View
       style={{
         flex: 1,
         alignItems: "center",
@@ -34,6 +33,6 @@ export default function UsersList() {
           })
         }
       />
-    </ThemedView>
+    </View>
   );
 }

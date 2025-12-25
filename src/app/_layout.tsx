@@ -47,8 +47,12 @@ export default function RootLayout() {
                 }}
               />
               <Stack.Screen
-                name="modal"
-                options={{ presentation: "modal", title: "Modal" }}
+                name="add-expense"
+                options={{ presentation: "modal", title: "Add Expense" }}
+              />
+              <Stack.Screen
+                name="add-income"
+                options={{ presentation: "modal", title: "Add Income" }}
               />
             </Stack>
             <StatusBar style="auto" />

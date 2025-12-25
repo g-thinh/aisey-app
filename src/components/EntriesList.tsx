@@ -1,6 +1,5 @@
 import useEntries from "@/hooks/useEntries";
-import { Text } from "react-native";
-import { ThemedView } from "./themed-view";
+import { ScrollView, Text, View } from "react-native";
 
 export default function EntriesList() {
   const { getEntries } = useEntries();
@@ -10,9 +9,17 @@ export default function EntriesList() {
     return <Text>An error occurred: {getEntries.error.message}</Text>;
 
   return (
-    <ThemedView>
-      <Text>Entries List Component</Text>
-      <ThemedView>
+    <ScrollView
+      contentContainerStyle={{
+        borderWidth: 2,
+        marginTop: 24,
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 12,
+      }}
+    >
+      <Text style={{ fontSize: 24 }}>Entries List Component</Text>
+      <View style={{ gap: 12 }}>
         {getEntries.data?.map((entry) => (
           <Text key={entry.entries.id}>
             {entry.entries.amount} by {entry.users?.name} on{" "}
@@ -20,7 +27,7 @@ export default function EntriesList() {
             {entry.categories?.name}
           </Text>
         ))}
-      </ThemedView>
-    </ThemedView>
+      </View>
+    </ScrollView>
   );
 }
