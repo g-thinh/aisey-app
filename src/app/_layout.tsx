@@ -37,7 +37,15 @@ export default function RootLayout() {
         <Suspense fallback={<Text>Loading...</Text>}>
           <SQLiteProvider useSuspense databaseName="local.db">
             <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="index"
+                options={{
+                  headerShown: false,
+                  contentStyle: {
+                    backgroundColor: "white",
+                  },
+                }}
+              />
               <Stack.Screen
                 name="modal"
                 options={{ presentation: "modal", title: "Modal" }}

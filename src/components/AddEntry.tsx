@@ -1,14 +1,12 @@
 import useEntries from "@/hooks/useEntries";
-import { Button, Text } from "react-native";
-import { ThemedView } from "./themed-view";
+import { Pressable, Text, View } from "react-native";
 
 export default function AddEntry() {
   const { createEntry } = useEntries();
   return (
-    <ThemedView>
-      <Text>Add Entry Component</Text>
-      <Button
-        title="Add Entry"
+    <View style={{ padding: 20 }}>
+      <Text style={{ textAlign: "center" }}>Add Entry Component</Text>
+      <Pressable
         onPress={() =>
           createEntry.mutate({
             userId: 33,
@@ -17,7 +15,9 @@ export default function AddEntry() {
             categoryId: 1,
           })
         }
-      />
-    </ThemedView>
+      >
+        <Text style={{ fontWeight: "500", fontSize: 16 }}>Add </Text>
+      </Pressable>
+    </View>
   );
 }
