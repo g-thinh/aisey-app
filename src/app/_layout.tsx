@@ -15,6 +15,7 @@ import { Suspense } from "react";
 import { Text } from "react-native";
 import "react-native-reanimated";
 import migrations from "../drizzle/migrations";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -36,26 +37,40 @@ export default function RootLayout() {
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <Suspense fallback={<Text>Loading...</Text>}>
           <SQLiteProvider useSuspense databaseName="local.db">
-            <Stack>
-              <Stack.Screen
-                name="index"
-                options={{
-                  headerShown: false,
+            <SafeAreaProvider>
+              <Stack
+                screenOptions={{
                   contentStyle: {
                     backgroundColor: "white",
                   },
+                  headerShadowVisible: false,
                 }}
-              />
-              <Stack.Screen
-                name="add-expense"
-                options={{ presentation: "modal", title: "Add Expense" }}
-              />
-              <Stack.Screen
-                name="add-income"
-                options={{ presentation: "modal", title: "Add Income" }}
-              />
-            </Stack>
-            <StatusBar style="auto" />
+              >
+                <Stack.Screen
+                  name="index"
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="add-expense"
+                  options={{
+                    presentation: "modal",
+                    title: "Add Expense",
+                    headerBackTitle: "Back",
+                  }}
+                />
+                <Stack.Screen
+                  name="add-income"
+                  options={{ presentation: "modal", title: "Add Income" }}
+                />
+                <Stack.Screen
+                  name="list-entries"
+                  options={{ title: "List Entries", headerBackTitle: "Back" }}
+                />
+              </Stack>
+              <StatusBar style="auto" />
+            </SafeAreaProvider>
           </SQLiteProvider>
         </Suspense>
       </ThemeProvider>

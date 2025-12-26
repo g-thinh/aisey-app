@@ -1,5 +1,10 @@
 import { db } from "@/database";
-import { categoriesTable, entriesTable, Entry, usersTable } from "@/database/schema";
+import {
+  categoriesTable,
+  entriesTable,
+  Entry,
+  usersTable,
+} from "@/database/schema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { eq } from "drizzle-orm";
 
@@ -24,7 +29,7 @@ export default function useEntries() {
         .leftJoin(usersTable, eq(usersTable.id, entriesTable.userId))
         .leftJoin(
           categoriesTable,
-          eq(categoriesTable.id, entriesTable.categoryId)
+          eq(categoriesTable.id, entriesTable.categoryId),
         )
         .all();
       return data;
@@ -42,7 +47,7 @@ export default function useEntries() {
     onError: (error) => {
       console.error("Error creating entry:", error);
     },
-    onSuccess: invalidateQueries
+    onSuccess: invalidateQueries,
   });
 
   const updateEntry = useMutation({

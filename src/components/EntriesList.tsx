@@ -10,24 +10,22 @@ export default function EntriesList() {
 
   return (
     <ScrollView
+      style={{ borderWidth: 2, borderColor: "red", flex: 1, height: "100%" }}
       contentContainerStyle={{
-        borderWidth: 2,
-        marginTop: 24,
-        justifyContent: "center",
-        alignItems: "center",
-        gap: 12,
+        backgroundColor: "red",
       }}
     >
-      <Text style={{ fontSize: 24 }}>Entries List Component</Text>
-      <View style={{ gap: 12 }}>
-        {getEntries.data?.map((entry) => (
-          <Text key={entry.entries.id}>
+      {getEntries.data?.map((entry) => (
+        <View key={entry.entries.id} style={{ margin: 10 }}>
+          <Text>
+            {entry.entries.id}
             {entry.entries.amount} by {entry.users?.name} on{" "}
             {new Date(entry.entries.posted_at).toLocaleDateString()} from{" "}
             {entry.categories?.name}
+            {entry.entries.type === "income" ? " (Income)" : " (Expense)"}
           </Text>
-        ))}
-      </View>
+        </View>
+      ))}
     </ScrollView>
   );
 }
