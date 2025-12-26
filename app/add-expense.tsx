@@ -1,4 +1,4 @@
-import useEntries from "@/hooks/useEntries";
+import useEntries from "hooks/useEntries";
 import { useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";

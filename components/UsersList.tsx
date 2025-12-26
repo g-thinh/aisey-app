@@ -1,4 +1,4 @@
-import useUsers from "@/hooks/useUsers";
+import useUsers from "hooks/useUsers";
 import { Button, Text, View } from "react-native";
 
 export default function UsersList() {

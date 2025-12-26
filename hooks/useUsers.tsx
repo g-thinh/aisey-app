@@ -1,5 +1,5 @@
-import { db } from "@/database";
-import { User, usersTable } from "@/database/schema";
+import { db } from "database";
+import { User, usersTable } from "database/schema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { eq } from "drizzle-orm";
 

@@ -1,5 +1,5 @@
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import useEntries from "@/hooks/useEntries";
+import useEntries from "hooks/useEntries";
 import { ScrollView, Text, View } from "react-native";
 
 export default function ListEntriesScreen() {
