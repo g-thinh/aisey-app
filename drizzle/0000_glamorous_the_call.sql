@@ -1,4 +1,3 @@
-ALTER TABLE `users_table` RENAME TO `users`;--> statement-breakpoint
 CREATE TABLE `categories` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
@@ -11,10 +10,16 @@ CREATE TABLE `entries` (
 	`category_id` integer NOT NULL,
 	`type` text NOT NULL,
 	`amount` integer NOT NULL,
-	`posted_at` integer DEFAULT (current_timestamp),
+	`posted_at` integer DEFAULT (unixepoch()) NOT NULL,
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-DROP INDEX `users_table_email_unique`;--> statement-breakpoint
+CREATE TABLE `users` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`name` text NOT NULL,
+	`age` integer NOT NULL,
+	`email` text NOT NULL
+);
+--> statement-breakpoint
 CREATE UNIQUE INDEX `users_email_unique` ON `users` (`email`);

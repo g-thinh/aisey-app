@@ -15,11 +15,10 @@ import { Suspense } from "react";
 import { Text } from "react-native";
 import "react-native-reanimated";
 import migrations from "../drizzle/migrations";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 
-export const unstable_settings = {
-  anchor: "(tabs)",
-};
+import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
+import "@/global.css";
+
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
@@ -35,9 +34,9 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Suspense fallback={<Text>Loading...</Text>}>
-          <SQLiteProvider useSuspense databaseName="local.db">
-            <SafeAreaProvider>
+        <GluestackUIProvider mode={colorScheme === "dark" ? "dark" : "light"}>
+          <Suspense fallback={<Text>Loading...</Text>}>
+            <SQLiteProvider useSuspense databaseName="local.db">
               <Stack
                 screenOptions={{
                   contentStyle: {
@@ -70,9 +69,9 @@ export default function RootLayout() {
                 />
               </Stack>
               <StatusBar style="auto" />
-            </SafeAreaProvider>
-          </SQLiteProvider>
-        </Suspense>
+            </SQLiteProvider>
+          </Suspense>
+        </GluestackUIProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

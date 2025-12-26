@@ -1,6 +1,8 @@
 import { useRouter } from "expo-router";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Text } from "@/components/ui/text";
+import { Heading } from "@/components/ui/heading";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -33,10 +35,9 @@ export default function HomeScreen() {
             gap: 12,
           }}
         >
-          <Text style={{ fontSize: 32 }}>{formatter.format(new Date())}</Text>
-          <Text style={{ fontSize: 18, color: "gray" }}>
-            Savings this month:{" "}
-            <Text style={{ fontSize: 18, color: "green" }}>$50.00</Text>
+          <Heading size="2xl">{formatter.format(new Date())}</Heading>
+          <Text>
+            Savings this month: <Text>$50.00</Text>
           </Text>
         </View>
         <View
@@ -91,9 +92,9 @@ export default function HomeScreen() {
             </Text>
           </Pressable>
         </View>
-        {/* <View style={{ backgroundColor: "red" }}>
-          <Text>Home Screen</Text>
-        </View> */}
+        <View>
+          <Text>Hello World</Text>
+        </View>
       </View>
       {/* <View>
         <Text>Home Screen</Text>
