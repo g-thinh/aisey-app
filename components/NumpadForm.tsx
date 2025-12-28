@@ -113,7 +113,7 @@ export default function NumpadForm({ onValueChange }: NumbpadProps) {
         backgroundColor: "white",
         alignItems: "center",
         padding: 24,
-        borderRadius: 12,
+        borderRadius: 4,
       }}
     >
       <View>
