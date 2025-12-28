@@ -3,6 +3,7 @@ import { Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/text";
 import { Heading } from "@/components/ui/heading";
+import NumpadForm from "@/components/NumpadForm";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -92,43 +93,9 @@ export default function HomeScreen() {
             </Text>
           </Pressable>
         </View>
-        <View>
-          <Text>Hello World</Text>
-        </View>
+
+        <NumpadForm />
       </View>
-      {/* <View>
-        <Text>Home Screen</Text>
-        <Pressable
-          style={{
-            padding: 10,
-            backgroundColor: "red",
-            marginTop: 10,
-            borderRadius: 12,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-          onPress={() => router.navigate("/add-expense")}
-        >
-          <Text style={{ fontWeight: "bold", color: "white" }}>
-            Add Expense
-          </Text>
-        </Pressable>
-        <Pressable
-          style={{
-            padding: 10,
-            backgroundColor: "green",
-            marginTop: 10,
-            borderRadius: 12,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-          onPress={() => router.navigate("/add-income")}
-        >
-          <Text style={{ fontWeight: "bold", color: "white" }}>Add Income</Text>
-        </Pressable>
-      </View> */}
-      {/* <UsersList /> */}
-      {/* <EntriesList /> */}
     </View>
   );
 }

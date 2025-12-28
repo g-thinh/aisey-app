@@ -39,9 +39,6 @@ export default function RootLayout() {
             <SQLiteProvider useSuspense databaseName="local.db">
               <Stack
                 screenOptions={{
-                  contentStyle: {
-                    backgroundColor: "white",
-                  },
                   headerShadowVisible: false,
                 }}
               >
