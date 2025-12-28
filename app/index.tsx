@@ -94,7 +94,9 @@ export default function HomeScreen() {
           </Pressable>
         </View>
 
-        <NumpadForm />
+        <NumpadForm
+          onValueChange={(value) => console.log("[NumpadForm]: value", value)}
+        />
       </View>
     </View>
   );

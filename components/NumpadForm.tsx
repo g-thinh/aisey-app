@@ -4,7 +4,11 @@ import { Pressable, View, Text, PressableProps, ViewStyle } from "react-native";
 
 const GAP = 14;
 
-export default function NumpadForm() {
+type NumbpadProps = {
+  onValueChange: (value: string) => void; // This is your callback prop
+};
+
+export default function NumpadForm({ onValueChange }: NumbpadProps) {
   const [rawValue, setRawValue] = useState("");
 
   const formatter = new Intl.NumberFormat("en-CA", {
@@ -46,7 +50,7 @@ export default function NumpadForm() {
     // 6. LENGTH LIMIT
     if (rawValue.length >= 10) return;
 
-    setRawValue((prev) => prev + num);
+    setRawValue(rawValue + num);
   };
 
   const handleClear = () => {
@@ -76,10 +80,9 @@ export default function NumpadForm() {
     setRawValue((prev) => {
       if (prev.length === 0) return "";
 
-      // 1. Create the new string by removing the last character
       let nextValue = prev.slice(0, -1);
 
-      // 2. If the new string now ends with a dot, remove that too
+      // If the string now ends with a dot, remove the dot too
       if (nextValue.endsWith(".")) {
         nextValue = nextValue.slice(0, -1);
       }
@@ -96,6 +99,7 @@ export default function NumpadForm() {
       alert("Nothing entered");
     } else {
       alert(`Added ${value} - ${numericValue}`);
+      onValueChange(value);
     }
 
     handleClear();
