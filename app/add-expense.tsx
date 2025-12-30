@@ -95,6 +95,7 @@ export default function AddExpenseModal() {
               amount: 100,
               type: "income",
               categoryId: 1,
+              posted_at: new Date(),
             })
           }
         >

@@ -12,6 +12,7 @@ import { useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import NumpadForm from "@/components/NumpadForm";
 
 export default function AddEntryScreen() {
   const router = useRouter();
@@ -21,14 +22,16 @@ export default function AddEntryScreen() {
   const { createEntry } = useEntries();
   const [date, setDate] = useState(new Date());
 
-  const handleCreateEntry = async () => {
+  const handleCreateEntry = async (value?: number) => {
     if (getUsers.data === undefined) return;
+
+    const enteredAmount = value ? value : parseFloat(amount);
 
     const userId = getUsers.data[0].id;
     await createEntry.mutate({
       userId,
       categoryId: 1,
-      amount: parseFloat(amount),
+      amount: enteredAmount,
       type,
       posted_at: date,
     });
@@ -86,7 +89,7 @@ export default function AddEntryScreen() {
         }
         headerRight={
           <Pressable
-            onPress={handleCreateEntry}
+            onPress={() => handleCreateEntry()}
             disabled={isNaN(parseFloat(amount))}
           >
             <Feather
@@ -99,6 +102,7 @@ export default function AddEntryScreen() {
       />
       <View style={{ marginHorizontal: 16, gap: 12 }}>
         <SpendingTypeToggle type={type} setType={setType} />
+        <NumpadForm onValueChange={(value) => handleCreateEntry(value)} />
         <View
           style={{
             flexDirection: "row",
@@ -112,7 +116,6 @@ export default function AddEntryScreen() {
         >
           <Text style={{ fontWeight: "bold", fontSize: 16 }}>Amount</Text>
           <TextInput
-            autoFocus
             style={{
               borderWidth: 1,
               borderColor: "gray",

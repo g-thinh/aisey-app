@@ -1,10 +1,13 @@
 import Header from "@/components/Header";
 import Loading from "@/components/Loading";
 import { SpendingType } from "@/components/SpendingTypeToggle";
-import useEntries from "@/hooks/useEntries";
+import { db } from "@/database";
+import { categoriesTable, entriesTable, usersTable } from "@/database/schema";
+import { eq, desc } from "drizzle-orm";
 import useUsers from "@/hooks/useUsers";
 import { formatCurrency } from "@/utils/formatCurrency";
 import Feather from "@expo/vector-icons/Feather";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useMemo } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
@@ -20,7 +23,23 @@ export default function HomeScreen() {
   const currentDate = format.format(new Date());
 
   const { getUsers } = useUsers();
-  const { getEntries } = useEntries();
+  const getEntries = useQuery({
+    queryKey: ["recent-entries"],
+    queryFn: async () => {
+      const data = await db
+        .select()
+        .from(entriesTable)
+        .leftJoin(usersTable, eq(usersTable.id, entriesTable.userId))
+        .leftJoin(
+          categoriesTable,
+          eq(categoriesTable.id, entriesTable.categoryId),
+        )
+        .orderBy(desc(entriesTable.posted_at))
+        .limit(5)
+        .all();
+      return data;
+    },
+  });
 
   const totalExpenses = useMemo(() => {
     if (getEntries.data === undefined) return 0;
@@ -80,9 +99,6 @@ export default function HomeScreen() {
     return <Loading />;
   }
 
-  // TODO: Create entries
-  const INCOME = 1500;
-
   return (
     <SafeAreaView
       style={{
@@ -93,7 +109,7 @@ export default function HomeScreen() {
         title={"Home"}
         headerLeft={
           <Pressable
-            onPress={() => alert("does nothing")}
+            onPress={() => router.navigate("/home")}
             style={{
               borderWidth: 1,
               padding: 8,
@@ -141,10 +157,10 @@ export default function HomeScreen() {
             <Text
               style={{
                 fontSize: 24,
-                color: INCOME - totalExpenses > 0 ? "green" : "red",
+                color: totalIncome - totalExpenses > 0 ? "green" : "red",
               }}
             >
-              {formatCurrency.format(INCOME - totalExpenses + totalIncome)}
+              {formatCurrency.format(totalIncome - totalExpenses)}
             </Text>
             <Text style={{ opacity: 0.8 }}>Projected savings this month</Text>
           </View>
@@ -185,7 +201,28 @@ export default function HomeScreen() {
             </View>
           </View>
           <View style={{ gap: 4 }}>
-            <Text style={{ fontWeight: "bold" }}>Recent Entries</Text>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 6,
+              }}
+            >
+              <Text style={{ fontWeight: "bold" }}>Recent Entries</Text>
+              <Pressable
+                onPress={() => router.navigate("/entries")}
+                style={{
+                  borderWidth: 1,
+                  padding: 8,
+                  borderRadius: 12,
+                  backgroundColor: "white",
+                }}
+              >
+                <Feather name="list" size={16} color="black" />
+              </Pressable>
+            </View>
+
             <ScrollView
               style={{
                 borderRadius: 4,

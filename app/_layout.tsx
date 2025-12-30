@@ -67,6 +67,12 @@ export default function RootLayout() {
                   options={{ title: "Users", headerShown: false }}
                 />
                 <Stack.Screen
+                  name="entries"
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
                   name="add-expense"
                   options={{
                     presentation: "modal",

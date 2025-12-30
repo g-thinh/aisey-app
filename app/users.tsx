@@ -1,14 +1,12 @@
 import Header from "@/components/Header";
 import { Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Feather from "@expo/vector-icons/Feather";
-import { useRouter } from "expo-router";
 import useUsers from "@/hooks/useUsers";
 import Loading from "@/components/Loading";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import BackButton from "@/components/BackButton";
 
 export default function UsersScreen() {
-  const router = useRouter();
   const { getUsers, createUser } = useUsers();
 
   const handleCreateUser = async () => {
@@ -27,11 +25,7 @@ export default function UsersScreen() {
     <SafeAreaView style={{ flex: 1, backdropFilter: "blur(2px)" }}>
       <Header
         title={"Users"}
-        headerLeft={
-          <Pressable onPress={router.back}>
-            <Feather name="arrow-left" size={24} color="black" />
-          </Pressable>
-        }
+        headerLeft={<BackButton />}
         headerRight={
           <Pressable
             onPress={handleCreateUser}

@@ -1,3 +1,4 @@
+import BackButton from "@/components/BackButton";
 import Header from "@/components/Header";
 import Loading from "@/components/Loading";
 import NumpadForm from "@/components/NumpadForm";
@@ -30,7 +31,13 @@ export default function DefaultHomeScreen() {
   const handleCreateEntry = async (amount: number) => {
     if (getUsers.data === undefined) return;
     const userId = getUsers.data[0].id;
-    await createEntry.mutate({ userId, categoryId: 1, amount, type });
+    await createEntry.mutate({
+      userId,
+      categoryId: 1,
+      amount,
+      type,
+      posted_at: new Date(),
+    });
   };
 
   const totalExpenses = useMemo(() => {
@@ -66,19 +73,7 @@ export default function DefaultHomeScreen() {
       <View style={{ justifyContent: "space-between", flex: 1 }}>
         <Header
           title={currentDate}
-          headerLeft={
-            <Pressable
-              onPress={() => alert("does nothing")}
-              style={{
-                borderWidth: 1,
-                padding: 8,
-                borderRadius: 12,
-                backgroundColor: "white",
-              }}
-            >
-              <Feather name="settings" size={16} color="black" />
-            </Pressable>
-          }
+          headerLeft={<BackButton />}
           headerRight={
             <Pressable
               onPress={() => router.navigate("/users")}
