@@ -4,10 +4,18 @@ import Loading from "@/components/Loading";
 import useEntries from "@/hooks/useEntries";
 import { formatCurrency } from "@/utils/formatCurrency";
 import Feather from "@expo/vector-icons/Feather";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import {
+  Pressable,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function EntriesScreen() {
+  const router = useRouter();
   const { getEntries } = useEntries();
 
   if (getEntries.isLoading) {
@@ -72,7 +80,7 @@ export default function EntriesScreen() {
           backgroundColor: "white",
           borderRadius: 8,
           gap: 14,
-          marginBottom: 32,
+          marginBottom: 12,
         }}
       >
         <View
@@ -130,7 +138,18 @@ export default function EntriesScreen() {
               borderColor: "lightgrey",
             }}
           >
-            <View style={{ flexDirection: "row", paddingVertical: 12 }}>
+            <TouchableOpacity
+              onPress={() =>
+                router.navigate({
+                  pathname: "/entries/[id]",
+                  params: { id: entries.id },
+                })
+              }
+              style={{
+                flexDirection: "row",
+                paddingVertical: 12,
+              }}
+            >
               <Text
                 style={{
                   flex: 1,
@@ -168,10 +187,15 @@ export default function EntriesScreen() {
               >
                 {users?.name}
               </Text>
-            </View>
+            </TouchableOpacity>
           </View>
         ))}
       </ScrollView>
+      <View style={{ justifyContent: "center", alignItems: "center" }}>
+        <Text style={{ fontWeight: "bold" }}>
+          Total: {getEntries.data?.length || 0}
+        </Text>
+      </View>
     </SafeAreaView>
   );
 }
