@@ -1,22 +1,17 @@
 import Header from "@/components/Header";
 import Loading from "@/components/Loading";
-import NumpadForm from "@/components/NumpadForm";
-import {
-  SpendingType,
-  SpendingTypeToggle,
-} from "@/components/SpendingTypeToggle";
+import { SpendingType } from "@/components/SpendingTypeToggle";
 import useEntries from "@/hooks/useEntries";
 import useUsers from "@/hooks/useUsers";
 import { formatCurrency } from "@/utils/formatCurrency";
 import Feather from "@expo/vector-icons/Feather";
 import { useRouter } from "expo-router";
-import { useMemo, useState } from "react";
-import { Pressable, View, Text, ScrollView } from "react-native";
+import { useMemo } from "react";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const router = useRouter();
-  const [type, setType] = useState(SpendingType.EXPENSE);
   const format = new Intl.DateTimeFormat("en-CA", {
     month: "long",
     year: "numeric",
@@ -57,6 +52,28 @@ export default function HomeScreen() {
     );
 
     return income;
+  }, [getEntries.data]);
+
+  const pendingCount = useMemo(() => {
+    if (getEntries.data === undefined) return 0;
+
+    // TODO: get sum by DB
+    const pending = getEntries.data.filter(
+      (view) => view.entries.posted_at >= new Date(),
+    );
+
+    return pending.length;
+  }, [getEntries.data]);
+
+  const postedCount = useMemo(() => {
+    if (getEntries.data === undefined) return 0;
+
+    // TODO: get sum by DB
+    const pending = getEntries.data.filter(
+      (view) => view.entries.posted_at <= new Date(),
+    );
+
+    return pending.length;
   }, [getEntries.data]);
 
   if (getUsers.isLoading) {
@@ -130,6 +147,42 @@ export default function HomeScreen() {
               {formatCurrency.format(INCOME - totalExpenses + totalIncome)}
             </Text>
             <Text style={{ opacity: 0.8 }}>Projected savings this month</Text>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              gap: 8,
+              width: "100%",
+            }}
+          >
+            <View
+              style={{
+                borderRadius: 4,
+                backgroundColor: "white",
+                flex: 1,
+                padding: 12,
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 4,
+              }}
+            >
+              <Text>Pending</Text>
+              <Text>{pendingCount}</Text>
+            </View>
+            <View
+              style={{
+                borderRadius: 4,
+                backgroundColor: "white",
+                flex: 1,
+                padding: 12,
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 4,
+              }}
+            >
+              <Text>Posted</Text>
+              <Text>{postedCount}</Text>
+            </View>
           </View>
           <View style={{ gap: 4 }}>
             <Text style={{ fontWeight: "bold" }}>Recent Entries</Text>
