@@ -68,6 +68,7 @@ export default function HomeScreen() {
           title={currentDate}
           headerLeft={
             <Pressable
+              onPress={() => alert("does nothing")}
               style={{
                 borderWidth: 1,
                 padding: 8,

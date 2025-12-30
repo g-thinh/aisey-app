@@ -109,7 +109,7 @@ export default function NumpadForm({ onValueChange }: NumbpadProps) {
     <View
       style={{
         width: "100%",
-        gap: 32,
+        gap: 16,
         backgroundColor: "white",
         alignItems: "center",
         padding: 24,
@@ -117,7 +117,7 @@ export default function NumpadForm({ onValueChange }: NumbpadProps) {
       }}
     >
       <View>
-        <Text style={{ fontSize: 48, fontWeight: "500" }}>
+        <Text style={{ fontSize: 32, fontWeight: "500" }}>
           {getDisplayValue()}
         </Text>
       </View>
@@ -128,6 +128,26 @@ export default function NumpadForm({ onValueChange }: NumbpadProps) {
           justifyContent: "center",
         }}
       >
+        <View style={{ gap: GAP }}>
+          <NumpadButton
+            style={{ backgroundColor: "gray" }}
+            onPress={() => alert("does nothing")}
+          >
+            CAT
+          </NumpadButton>
+          <NumpadButton
+            style={{ backgroundColor: "gray" }}
+            onPress={() => alert("does nothing")}
+          >
+            CHG
+          </NumpadButton>
+          <NumpadButton
+            style={{ backgroundColor: "gray" }}
+            onPress={() => alert("does nothing")}
+          >
+            DEL
+          </NumpadButton>
+        </View>
         <View style={{ gap: GAP }}>
           <View style={{ flexDirection: "row", gap: GAP }}>
             <NumpadButton onPress={() => handlePress("1")}>1</NumpadButton>
