@@ -49,6 +49,10 @@ export default function RootLayout() {
                   }}
                 />
                 <Stack.Screen
+                  name="users"
+                  options={{ title: "Users", headerShown: false }}
+                />
+                <Stack.Screen
                   name="add-expense"
                   options={{
                     presentation: "modal",

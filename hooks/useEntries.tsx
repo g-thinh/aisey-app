@@ -6,7 +6,7 @@ import {
   usersTable,
 } from "database/schema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 
 type CreateEntryParams = Pick<
   Entry,
@@ -31,6 +31,7 @@ export default function useEntries() {
           categoriesTable,
           eq(categoriesTable.id, entriesTable.categoryId),
         )
+        .orderBy(desc(entriesTable.posted_at))
         .all();
       return data;
     },

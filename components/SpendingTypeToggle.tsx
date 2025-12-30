@@ -1,26 +1,24 @@
 import { Text } from "@/components/ui/text";
-import { PropsWithChildren, useState } from "react";
+import { PropsWithChildren } from "react";
 import { Pressable, View } from "react-native";
 
-enum SpendingType {
+export enum SpendingType {
   EXPENSE = "expense",
   INCOME = "income",
 }
 
 type SpendingTypeToggleProps = {
-  onChange: (value: SpendingType) => void;
+  type: SpendingType;
+  setType: React.Dispatch<React.SetStateAction<SpendingType>>;
 };
 
-export function SpendingTypeToggle({ onChange }: SpendingTypeToggleProps) {
-  const [type, setType] = useState(SpendingType.EXPENSE);
-
+export function SpendingTypeToggle({ type, setType }: SpendingTypeToggleProps) {
   const toggleType = () => {
     const newType =
       type === SpendingType.EXPENSE
         ? SpendingType.INCOME
         : SpendingType.EXPENSE;
     setType(newType);
-    onChange(newType);
   };
 
   return (

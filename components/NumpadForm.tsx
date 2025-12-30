@@ -5,7 +5,7 @@ import { Pressable, View, Text, PressableProps, ViewStyle } from "react-native";
 const GAP = 14;
 
 type NumbpadProps = {
-  onValueChange: (value: string) => void; // This is your callback prop
+  onValueChange: (value: number) => void; // This is your callback prop
 };
 
 export default function NumpadForm({ onValueChange }: NumbpadProps) {
@@ -99,7 +99,7 @@ export default function NumpadForm({ onValueChange }: NumbpadProps) {
       alert("Nothing entered");
     } else {
       alert(`Added ${value} - ${numericValue}`);
-      onValueChange(value);
+      onValueChange(numericValue);
     }
 
     handleClear();
