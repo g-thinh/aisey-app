@@ -10,7 +10,7 @@ import { desc, eq } from "drizzle-orm";
 
 type CreateEntryParams = Pick<
   Entry,
-  "userId" | "categoryId" | "amount" | "type"
+  "userId" | "categoryId" | "amount" | "type" | "posted_at"
 >;
 type UpdateEntryParams = Pick<Entry, "id" | "amount">;
 
@@ -38,10 +38,12 @@ export default function useEntries() {
   });
 
   const createEntry = useMutation({
-    mutationFn: ({ userId, categoryId, amount, type }: CreateEntryParams) => {
+    mutationFn: (entry: CreateEntryParams) => {
       return db
         .insert(entriesTable)
-        .values({ userId, categoryId, amount, type })
+        .values({
+          ...entry,
+        })
         .returning();
     },
     mutationKey: ["addEntry"],

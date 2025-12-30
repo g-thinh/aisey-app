@@ -43,13 +43,28 @@ export default function HomeScreen() {
     return expenses;
   }, [getEntries.data]);
 
+  const totalIncome = useMemo(() => {
+    if (getEntries.data === undefined) return 0;
+
+    // TODO: get sum by DB
+    const amounts = getEntries.data
+      .filter((view) => view.entries.type === SpendingType.INCOME)
+      .map((view) => view.entries.amount);
+
+    const income = amounts.reduce(
+      (sumSoFar, currentValue) => sumSoFar + currentValue,
+      0,
+    );
+
+    return income;
+  }, [getEntries.data]);
+
   if (getUsers.isLoading) {
     return <Loading />;
   }
 
   // TODO: Create entries
   const INCOME = 1500;
-  const EXPENSE = 500;
 
   return (
     <SafeAreaView
@@ -112,7 +127,7 @@ export default function HomeScreen() {
                 color: INCOME - totalExpenses > 0 ? "green" : "red",
               }}
             >
-              {formatCurrency.format(INCOME - totalExpenses)}
+              {formatCurrency.format(INCOME - totalExpenses + totalIncome)}
             </Text>
             <Text style={{ opacity: 0.8 }}>Projected savings this month</Text>
           </View>
@@ -147,7 +162,7 @@ export default function HomeScreen() {
                         {view.users?.name}
                       </Text>{" "}
                       on{" "}
-                      {view.entries.posted_at.toLocaleDateString("en-CA", {
+                      {view.entries.created_at.toLocaleDateString("en-CA", {
                         dateStyle: "full",
                       })}
                     </Text>

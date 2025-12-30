@@ -11,6 +11,7 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function AddEntryScreen() {
   const router = useRouter();
@@ -18,9 +19,9 @@ export default function AddEntryScreen() {
   const [amount, setAmount] = useState("");
   const { getUsers } = useUsers();
   const { createEntry } = useEntries();
+  const [date, setDate] = useState(new Date());
 
   const handleCreateEntry = async () => {
-    console.log("parseFloat(amount)", parseFloat(amount));
     if (getUsers.data === undefined) return;
 
     const userId = getUsers.data[0].id;
@@ -29,6 +30,7 @@ export default function AddEntryScreen() {
       categoryId: 1,
       amount: parseFloat(amount),
       type,
+      posted_at: date,
     });
     router.back();
   };
@@ -181,7 +183,16 @@ export default function AddEntryScreen() {
           }}
         >
           <Text style={{ fontWeight: "bold", fontSize: 16 }}>Date</Text>
-          <Text>{new Date().toLocaleDateString()}</Text>
+
+          <DateTimePicker
+            value={date}
+            mode={"date"}
+            onChange={(_event, selectedDate) => {
+              if (selectedDate) {
+                setDate(selectedDate);
+              }
+            }}
+          />
         </View>
         <View
           style={{

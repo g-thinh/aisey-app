@@ -27,6 +27,13 @@ export const entriesTable = sqliteTable("entries", {
   posted_at: integer({ mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
+  created_at: integer({ mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  updated_at: integer({ mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`)
+    .$onUpdate(() => sql`(unixepoch())`),
 });
 
 export type User = typeof usersTable.$inferSelect;
