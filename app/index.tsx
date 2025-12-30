@@ -1,17 +1,25 @@
 import Header from "@/components/Header";
-import Loading from "@/components/Loading";
 import { SpendingType } from "@/components/SpendingTypeToggle";
 import { db } from "@/database";
-import { categoriesTable, entriesTable, usersTable } from "@/database/schema";
-import { eq, desc } from "drizzle-orm";
-import useUsers from "@/hooks/useUsers";
+import * as schema from "@/database/schema";
 import { formatCurrency } from "@/utils/formatCurrency";
 import Feather from "@expo/vector-icons/Feather";
-import { useQuery } from "@tanstack/react-query";
+import { and, desc, eq, gte, lt, lte, sql } from "drizzle-orm";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useRouter } from "expo-router";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+const getMonthBounds = (date: Date) => {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+
+  return {
+    start: new Date(year, month, 1, 0, 0, 0, 0),
+    end: new Date(year, month + 1, 0, 23, 59, 59, 999),
+  };
+};
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -19,85 +27,84 @@ export default function HomeScreen() {
     month: "long",
     year: "numeric",
   });
+  const today = new Date();
+  const [currentMonth, setCurrentMonth] = useState<Date>(
+    new Date(today.getFullYear(), today.getMonth(), 1),
+  );
+  const monthRange = useMemo(
+    () => getMonthBounds(currentMonth),
+    [currentMonth],
+  );
 
-  const currentDate = format.format(new Date());
+  const { data: entries } = useLiveQuery(
+    db
+      .select({
+        id: schema.entriesTable.id,
+        type: schema.entriesTable.type,
+        amount: schema.entriesTable.amount,
+        posted_at: schema.entriesTable.posted_at,
+        user_name: schema.usersTable.name,
+      })
+      .from(schema.entriesTable)
+      .leftJoin(
+        schema.usersTable,
+        eq(schema.usersTable.id, schema.entriesTable.userId),
+      )
+      .leftJoin(
+        schema.categoriesTable,
+        eq(schema.categoriesTable.id, schema.entriesTable.categoryId),
+      )
+      .orderBy(desc(schema.entriesTable.posted_at))
+      .where(
+        and(
+          gte(schema.entriesTable.posted_at, monthRange.start),
+          lt(schema.entriesTable.posted_at, monthRange.end),
+        ),
+      )
+      .limit(5),
+    [monthRange],
+  );
 
-  const { getUsers } = useUsers();
-  const getEntries = useQuery({
-    queryKey: ["entries"],
-    queryFn: async () => {
-      const data = await db
-        .select()
-        .from(entriesTable)
-        .leftJoin(usersTable, eq(usersTable.id, entriesTable.userId))
-        .leftJoin(
-          categoriesTable,
-          eq(categoriesTable.id, entriesTable.categoryId),
-        )
-        .orderBy(desc(entriesTable.posted_at))
-        .limit(5)
-        .all();
-      return data;
-    },
-  });
+  const { data: summary } = useLiveQuery(
+    db
+      .select({
+        totalIncome:
+          sql<number>`COALESCE(SUM(CASE WHEN ${schema.entriesTable.type} = ${SpendingType.INCOME} THEN ${schema.entriesTable.amount} ELSE 0 END),0)`.mapWith(
+            Number,
+          ),
+        totalExpenses:
+          sql<number>`COALESCE(SUM(CASE WHEN ${schema.entriesTable.type} = ${SpendingType.EXPENSE} THEN ${schema.entriesTable.amount} ELSE 0 END),0)`.mapWith(
+            Number,
+          ),
+      })
+      .from(schema.entriesTable)
+      .where(
+        and(
+          gte(schema.entriesTable.posted_at, monthRange.start),
+          lte(schema.entriesTable.posted_at, monthRange.end),
+        ),
+      ),
+    [monthRange],
+  );
+  const savingsSummary = summary?.[0];
+  const totalSavings =
+    savingsSummary?.totalIncome - savingsSummary?.totalExpenses;
 
-  const totalExpenses = useMemo(() => {
-    if (getEntries.data === undefined) return 0;
+  const nextMonth = () => {
+    setCurrentMonth((prev) => {
+      const newDate = new Date(prev);
+      newDate.setMonth(newDate.getMonth() + 1);
+      return newDate;
+    });
+  };
 
-    // TODO: get sum by DB
-    const amounts = getEntries.data
-      .filter((view) => view.entries.type === SpendingType.EXPENSE)
-      .map((view) => view.entries.amount);
-
-    const expenses = amounts.reduce(
-      (sumSoFar, currentValue) => sumSoFar + currentValue,
-      0,
-    );
-
-    return expenses;
-  }, [getEntries.data]);
-
-  const totalIncome = useMemo(() => {
-    if (getEntries.data === undefined) return 0;
-
-    // TODO: get sum by DB
-    const amounts = getEntries.data
-      .filter((view) => view.entries.type === SpendingType.INCOME)
-      .map((view) => view.entries.amount);
-
-    const income = amounts.reduce(
-      (sumSoFar, currentValue) => sumSoFar + currentValue,
-      0,
-    );
-
-    return income;
-  }, [getEntries.data]);
-
-  const pendingCount = useMemo(() => {
-    if (getEntries.data === undefined) return 0;
-
-    // TODO: get sum by DB
-    const pending = getEntries.data.filter(
-      (view) => view.entries.posted_at >= new Date(),
-    );
-
-    return pending.length;
-  }, [getEntries.data]);
-
-  const postedCount = useMemo(() => {
-    if (getEntries.data === undefined) return 0;
-
-    // TODO: get sum by DB
-    const pending = getEntries.data.filter(
-      (view) => view.entries.posted_at <= new Date(),
-    );
-
-    return pending.length;
-  }, [getEntries.data]);
-
-  if (getUsers.isLoading) {
-    return <Loading />;
-  }
+  const prevMonth = () => {
+    setCurrentMonth((prev) => {
+      const newDate = new Date(prev);
+      newDate.setMonth(newDate.getMonth() - 1);
+      return newDate;
+    });
+  };
 
   return (
     <SafeAreaView
@@ -106,7 +113,7 @@ export default function HomeScreen() {
       }}
     >
       <Header
-        title={"Home"}
+        title={format.format(currentMonth)}
         headerLeft={
           <Pressable
             onPress={() => router.navigate("/home")}
@@ -144,62 +151,36 @@ export default function HomeScreen() {
         <View style={{ gap: 24 }}>
           <View
             style={{
-              justifyContent: "center",
-              alignItems: "center",
-              marginBottom: 12,
-            }}
-          >
-            <View style={{ marginBottom: 8 }}>
-              <Text style={{ fontWeight: "bold", fontSize: 24 }}>
-                {currentDate}
-              </Text>
-            </View>
-            <Text
-              style={{
-                fontSize: 24,
-                color: totalIncome - totalExpenses > 0 ? "green" : "red",
-              }}
-            >
-              {formatCurrency.format(totalIncome - totalExpenses)}
-            </Text>
-            <Text style={{ opacity: 0.8 }}>Projected savings this month</Text>
-          </View>
-          <View
-            style={{
               flexDirection: "row",
-              gap: 8,
-              width: "100%",
+              justifyContent: "space-around",
+              alignItems: "center",
             }}
           >
+            <Pressable onPress={prevMonth}>
+              <Feather name="chevrons-left" size={24} color="black" />
+            </Pressable>
             <View
               style={{
-                borderRadius: 4,
-                backgroundColor: "white",
-                flex: 1,
-                padding: 12,
                 justifyContent: "center",
                 alignItems: "center",
-                gap: 4,
+                marginBottom: 12,
               }}
             >
-              <Text>Pending</Text>
-              <Text>{pendingCount}</Text>
+              <Text
+                style={{
+                  fontSize: 24,
+                  color: totalSavings > 0 ? "green" : "red",
+                }}
+              >
+                {formatCurrency.format(totalSavings)}
+              </Text>
+              <Text style={{ opacity: 0.8 }}>Projected savings this month</Text>
             </View>
-            <View
-              style={{
-                borderRadius: 4,
-                backgroundColor: "white",
-                flex: 1,
-                padding: 12,
-                justifyContent: "center",
-                alignItems: "center",
-                gap: 4,
-              }}
-            >
-              <Text>Posted</Text>
-              <Text>{postedCount}</Text>
-            </View>
+            <Pressable onPress={nextMonth}>
+              <Feather name="chevrons-right" size={24} color="black" />
+            </Pressable>
           </View>
+
           <View style={{ gap: 4 }}>
             <View
               style={{
@@ -209,7 +190,7 @@ export default function HomeScreen() {
                 marginBottom: 6,
               }}
             >
-              <Text style={{ fontWeight: "bold" }}>Recent Entries</Text>
+              <Text style={{ fontWeight: "bold" }}>Entries</Text>
               <Pressable
                 onPress={() => router.navigate("/entries")}
                 style={{
@@ -233,26 +214,26 @@ export default function HomeScreen() {
               }}
               contentContainerStyle={{ gap: 12 }}
             >
-              {getEntries.data?.map((view) => {
+              {entries?.map((entry) => {
                 return (
-                  <View key={view.entries.id} style={{ width: "100%" }}>
+                  <View key={entry.id} style={{ width: "100%" }}>
                     <Text>
                       <Text
                         style={{
                           color:
-                            view.entries.type === SpendingType.EXPENSE
+                            entry.type === SpendingType.EXPENSE
                               ? "red"
                               : "green",
                         }}
                       >
-                        {formatCurrency.format(view.entries.amount)}
+                        {formatCurrency.format(entry.amount)}
                       </Text>{" "}
                       added by{" "}
                       <Text style={{ fontWeight: "bold" }}>
-                        {view.users?.name}
+                        {entry.user_name}
                       </Text>{" "}
                       on{" "}
-                      {view.entries.created_at.toLocaleDateString("en-CA", {
+                      {entry.posted_at.toLocaleDateString("en-CA", {
                         dateStyle: "full",
                       })}
                     </Text>

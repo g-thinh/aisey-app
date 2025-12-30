@@ -36,7 +36,11 @@ export default function RootLayout() {
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <GluestackUIProvider mode={colorScheme === "dark" ? "dark" : "light"}>
           <Suspense fallback={<Text>Loading...</Text>}>
-            <SQLiteProvider useSuspense databaseName="local.db">
+            <SQLiteProvider
+              useSuspense
+              databaseName="local.db"
+              options={{ enableChangeListener: true }}
+            >
               <Stack
                 screenOptions={{
                   headerShadowVisible: false,
