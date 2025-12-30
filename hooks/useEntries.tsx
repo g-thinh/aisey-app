@@ -18,10 +18,12 @@ export default function useEntries() {
   const queryClient = useQueryClient();
 
   const invalidateQueries = () =>
-    queryClient.invalidateQueries({ queryKey: ["entries"] });
+    queryClient.invalidateQueries({
+      queryKey: ["entries"],
+    });
 
   const getEntries = useQuery({
-    queryKey: ["entries"],
+    queryKey: ["entries", "recent-entries"],
     queryFn: async () => {
       const data = await db
         .select()

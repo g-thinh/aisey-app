@@ -24,7 +24,7 @@ export default function HomeScreen() {
 
   const { getUsers } = useUsers();
   const getEntries = useQuery({
-    queryKey: ["recent-entries"],
+    queryKey: ["entries"],
     queryFn: async () => {
       const data = await db
         .select()
