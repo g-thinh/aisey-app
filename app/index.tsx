@@ -25,13 +25,7 @@ export default function HomeScreen() {
   const currentDate = format.format(new Date());
 
   const { getUsers } = useUsers();
-  const { getEntries, createEntry } = useEntries();
-
-  const handleCreateEntry = async (amount: number) => {
-    if (getUsers.data === undefined) return;
-    const userId = getUsers.data[0].id;
-    await createEntry.mutate({ userId, categoryId: 1, amount, type });
-  };
+  const { getEntries } = useEntries();
 
   const totalExpenses = useMemo(() => {
     if (getEntries.data === undefined) return 0;
@@ -63,148 +57,65 @@ export default function HomeScreen() {
         flex: 1,
       }}
     >
-      <View style={{ justifyContent: "space-between", flex: 1 }}>
-        <Header
-          title={currentDate}
-          headerLeft={
-            <Pressable
-              onPress={() => alert("does nothing")}
-              style={{
-                borderWidth: 1,
-                padding: 8,
-                borderRadius: 12,
-                backgroundColor: "white",
-              }}
-            >
-              <Feather name="settings" size={16} color="black" />
-            </Pressable>
-          }
-          headerRight={
-            <Pressable
-              onPress={() => router.navigate("/users")}
-              style={{
-                borderWidth: 1,
-                padding: 8,
-                borderRadius: 12,
-                backgroundColor: "black",
-              }}
-            >
-              <Feather name="users" size={16} color="white" />
-            </Pressable>
-          }
-        />
-        <View
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-            marginBottom: 12,
-          }}
-        >
-          <Text style={{ opacity: 0.8 }}>Projected savings this month</Text>
-          <Text
+      <Header
+        title={"Home"}
+        headerLeft={
+          <Pressable
+            onPress={() => alert("does nothing")}
             style={{
-              fontSize: 24,
-              color: INCOME - totalExpenses > 0 ? "green" : "red",
+              borderWidth: 1,
+              padding: 8,
+              borderRadius: 12,
+              backgroundColor: "white",
             }}
           >
-            {formatCurrency.format(INCOME - totalExpenses)}
-          </Text>
-        </View>
-        <View style={{ gap: 8, marginHorizontal: 16 }}>
+            <Feather name="settings" size={16} color="black" />
+          </Pressable>
+        }
+        headerRight={
+          <Pressable
+            onPress={() => router.navigate("/users")}
+            style={{
+              borderWidth: 1,
+              padding: 8,
+              borderRadius: 12,
+              backgroundColor: "black",
+            }}
+          >
+            <Feather name="users" size={16} color="white" />
+          </Pressable>
+        }
+      />
+      <View
+        style={{
+          justifyContent: "space-between",
+          flex: 1,
+          marginHorizontal: 20,
+        }}
+      >
+        <View style={{ gap: 24 }}>
           <View
             style={{
-              flexDirection: "row",
-              justifyContent: "space-around",
+              justifyContent: "center",
+              alignItems: "center",
+              marginBottom: 12,
             }}
           >
-            <Text style={{ fontWeight: "bold" }}>Income</Text>
-            <Text style={{ fontWeight: "bold" }}>Expenses</Text>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              gap: 8,
-              width: "100%",
-            }}
-          >
-            <View
-              style={{
-                borderRadius: 4,
-                backgroundColor: "white",
-                flex: 1,
-                padding: 12,
-                justifyContent: "center",
-                alignItems: "center",
-                gap: 4,
-              }}
-            >
-              <Text>Expected</Text>
-              <Text style={{ color: "green" }}>
-                +{formatCurrency.format(INCOME)}
+            <View style={{ marginBottom: 8 }}>
+              <Text style={{ fontWeight: "bold", fontSize: 24 }}>
+                {currentDate}
               </Text>
             </View>
-            <View
+            <Text
               style={{
-                borderRadius: 4,
-                backgroundColor: "white",
-                flex: 1,
-                padding: 12,
-                justifyContent: "center",
-                alignItems: "center",
-                gap: 4,
+                fontSize: 24,
+                color: INCOME - totalExpenses > 0 ? "green" : "red",
               }}
             >
-              <Text>Expected</Text>
-              <Text style={{ color: "red" }}>
-                -{formatCurrency.format(EXPENSE)}
-              </Text>
-            </View>
+              {formatCurrency.format(INCOME - totalExpenses)}
+            </Text>
+            <Text style={{ opacity: 0.8 }}>Projected savings this month</Text>
           </View>
-          <View
-            style={{
-              flexDirection: "row",
-              gap: 8,
-              width: "100%",
-            }}
-          >
-            <View
-              style={{
-                borderRadius: 4,
-                backgroundColor: "white",
-                flex: 1,
-                padding: 12,
-                justifyContent: "center",
-                alignItems: "center",
-                gap: 4,
-              }}
-            >
-              <Text>Actual</Text>
-              <Text>{formatCurrency.format(INCOME)}</Text>
-            </View>
-            <View
-              style={{
-                borderRadius: 4,
-                backgroundColor: "white",
-                flex: 1,
-                padding: 12,
-                justifyContent: "center",
-                alignItems: "center",
-                gap: 4,
-              }}
-            >
-              <Text>Actual</Text>
-              <Text style={{ color: "red" }}>
-                -{formatCurrency.format(totalExpenses)}
-              </Text>
-            </View>
-          </View>
-        </View>
-        <View
-          style={{
-            marginHorizontal: 16,
-            gap: 12,
-          }}
-        >
           <View style={{ gap: 4 }}>
             <Text style={{ fontWeight: "bold" }}>Recent Entries</Text>
             <ScrollView
@@ -212,8 +123,8 @@ export default function HomeScreen() {
                 borderRadius: 4,
                 backgroundColor: "white",
                 padding: 16,
-                maxHeight: 100,
                 minHeight: 100,
+                maxHeight: 300,
               }}
               contentContainerStyle={{ gap: 12 }}
             >
@@ -245,12 +156,25 @@ export default function HomeScreen() {
               })}
             </ScrollView>
           </View>
-          <SpendingTypeToggle type={type} setType={setType} />
-          <NumpadForm
-            onValueChange={(value) => {
-              handleCreateEntry(value);
+        </View>
+        <View style={{ width: "50%", alignSelf: "center" }}>
+          <Pressable
+            onPress={() => router.navigate("/add-entry")}
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 4,
+              borderWidth: 2,
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              borderRadius: 8,
+              backgroundColor: "black",
             }}
-          />
+          >
+            <Feather name="plus" size={24} color="white" />
+            <Text style={{ fontSize: 18, color: "white" }}>Add new entry</Text>
+          </Pressable>
         </View>
       </View>
     </SafeAreaView>

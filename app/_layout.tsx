@@ -59,6 +59,7 @@ export default function RootLayout() {
                   name="add-entry"
                   options={{
                     title: "Add Entry",
+                    headerShown: false,
                   }}
                 />
                 <Stack.Screen
